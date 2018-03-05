@@ -1,0 +1,8 @@
+* System
+ * glfw
+
+* Python
+ * pyopengl
+ * numpy
+ * cython
+ * cyglfw3
