@@ -1,6 +1,14 @@
 import ctypes
 
 from OpenGL.GL import *
+from OpenGL.GLU import gluErrorString
+from PIL import Image
+
+
+def check_glerror(message='check_glerror'):
+    '''Print OpenGL error message'''
+    err = glGetError()
+    print('{}: {}'.format(message, gluErrorString(err)))
 
 
 def create_program(shader_list):
@@ -55,3 +63,9 @@ def offsetof(index, alignment):
     for i in range(0, index):
         offset = offset + alignment[i]
     return offset
+
+
+def npimage_from_path(imgpath):
+    with Image.open(imgpath) as img:
+        data = np.asarray(img, dtype='uint8')
+        return data

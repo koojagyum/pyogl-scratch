@@ -2,6 +2,8 @@ import ctypes
 import numpy as np
 
 from OpenGL.GL import *
+from PIL import Image
+
 from glutils import *
 
 
@@ -119,11 +121,11 @@ class VertexObject:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
 
     def __del__(self):
-        if self.vbo != None:
+        if self.vbo is not None:
             glDeleteBuffers(1, np.array([self.vbo]))
-        if self.ebo != None:
+        if self.ebo is not None:
             glDeleteBuffers(1, np.array([self.ebo]))
-        if self.vao != None:
+        if self.vao is not None:
             glDeleteVertexArrays(1, np.array([self.vao]))
 
     def __enter__(self):
@@ -133,3 +135,46 @@ class VertexObject:
     def __exit__(self, exc_type, exc_value, tb):
         glBindVertexArray(0)
 
+
+class Texture:
+
+    def __init__(self, **kwargs):
+        self.texture = glGenTextures(1)
+        self.update(**kwargs)
+
+    def __del__(self):
+        glDeleteTextures(np.array([self.texture], dtype='int32'))
+
+    def __enter__(self):
+        glActiveTexture(self.unit)
+        glBindTexture(self.target, self.texture)
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        glActiveTexture(self.unit)
+        glBindTexture(self.target, 0)
+
+    # image is numpy uint8 array
+    def update(self, **kwargs):
+        self.target = kwargs.pop('target', GL_TEXTURE_2D)
+        self.unit = kwargs.pop('unit', GL_TEXTURE0)
+        self.unitNumber = self.unit - GL_TEXTURE0
+
+        image = kwargs.pop('image', None)
+        if image is not None:
+            glBindTexture(self.target, self.texture)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+            glTexImage2D(
+                self.target,
+                0,
+                GL_RGB,
+                image.shape[1], image.shape[0],
+                0,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                image
+            )
+            glBindTexture(self.target, 0)

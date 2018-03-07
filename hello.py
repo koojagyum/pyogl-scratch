@@ -1,8 +1,10 @@
-from OpenGL.GL import *
-from renderer import TriangleRenderer, RectangleRenderer
-
 import cyglfw3 as glfw
 import os
+
+from OpenGL.GL import *
+from PIL import Image
+
+from renderer import *
 
 
 def main():
@@ -31,10 +33,14 @@ def main():
 
     glClearColor(0.5, 0.5, 0.5,1.0)
 
-    # renderer = TriangleRenderer('./scene/triangle.vs', './scene/triangle.fs')
-    renderer = RectangleRenderer('./scene/triangle.vs', './scene/triangle.fs')
-    renderer.prepare()
+    imgpath = ''
+    # renderer = TriangleRenderer()
+    # renderer = RectangleRenderer()
+    with Image.open('./image/psh.jpg') as img:
+        data = np.asarray(img, dtype='uint8')
+        renderer = TextureRenderer(image=data)
 
+    renderer.prepare()
     while not glfw.WindowShouldClose(win):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -49,3 +55,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # image_test()
+    
