@@ -173,7 +173,7 @@ class Texture:
                 GL_RGB,
                 image.shape[1], image.shape[0],
                 0,
-                GL_RGB,
+                GL_RGB, # BGR
                 GL_UNSIGNED_BYTE,
                 image
             )

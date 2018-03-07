@@ -103,10 +103,10 @@ class TextureRenderer(Renderer):
     def prepare(self):
         super().prepare()
         v = np.array(
-            [-0.5, -0.5, +0.0, 0.0, 0.0,
-             +0.5, -0.5, +0.0, 1.0, 0.0,
-             -0.5, +0.5, +0.0, 0.0, 1.0,
-             +0.5, +0.5, +0.0, 1.0, 1.0],
+            [-1.0, -1.0, +0.0, 0.0, 0.0,
+             +1.0, -1.0, +0.0, 1.0, 0.0,
+             -1.0, +1.0, +0.0, 0.0, 1.0,
+             +1.0, +1.0, +0.0, 1.0, 1.0],
             dtype='float32'
         )
         e = np.array(
@@ -118,7 +118,7 @@ class TextureRenderer(Renderer):
         self.texture = Texture(image=self.image)
 
     def update(self, image):
-        self.texture.update(image=self.image)
+        self.texture.update(image=image)
 
     def render(self):
         with self.program as program:
