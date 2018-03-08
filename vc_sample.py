@@ -2,6 +2,7 @@ import cv2
 import cyglfw3 as glfw
 import numpy as np
 import os
+import time
 
 from renderer import *
 from threading import Thread
@@ -28,6 +29,20 @@ DEFAULT_TITLE='vc sample'
 #         while True:
 #             _, self.current_frame = self.video_capture.read()
 #             self.consumer.update(self.current_frame)
+
+
+def process_frame(frame, fps):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    color = (0, 0, 255)
+    pos = (0, 30)
+    fps_str = '{:5.2f} fps'.format(fps)
+
+    if len(frame.shape) < 3:
+        frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+
+    cv2.putText(frame, fps_str, pos, font, 1, color, 1, cv2.LINE_AA)
+
+    return frame
 
 
 def test_vcgl():
@@ -64,8 +79,16 @@ def test_vcgl():
 
     cap = cv2.VideoCapture(0)
 
+    start = recent = time.time()
     while not glfw.WindowShouldClose(win):
         _, frame = cap.read()
+
+        # Calc fps
+        start = recent
+        recent = time.time()
+        diff = recent - start
+        fps = 1.0 / diff
+        frame = process_frame(frame, fps)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
