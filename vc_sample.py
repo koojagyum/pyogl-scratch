@@ -53,6 +53,7 @@ def test_vcgl():
         frame = webcam.frame
         fps_checker.lab(frame)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = frame[::-1, ...]
         renderer.update(frame)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)

@@ -33,11 +33,11 @@ def main():
 
     glClearColor(0.5, 0.5, 0.5,1.0)
 
-    imgpath = ''
     # renderer = TriangleRenderer()
     # renderer = RectangleRenderer()
     with Image.open('./image/psh.jpg') as img:
         data = np.asarray(img, dtype='uint8')
+        data = data[::-1, ...]
         renderer = TextureRenderer(image=data)
 
     renderer.prepare()
