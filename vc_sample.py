@@ -5,31 +5,12 @@ import os
 import time
 
 from renderer import *
-from threading import Thread
 from cvutils import *
 
 
 DEFAULT_WIDTH=1280
 DEFAULT_HEIGHT=720
 DEFAULT_TITLE='vc sample'
-
-
-# class WebCam:
-
-#     def __init__(self, consumer):
-#         self.video_capture = cv2.VideoCapture(0)
-#         self.current_frame = None
-#         self.consumer = consumer
-#         # _, self.current_frame = self.video_capture.read()
-
-#     # create thread for capturing image
-#     def start(self):
-#         Thread(target=self._update_frame, args=()).start()
-
-#     def _update_frame(self):
-#         while True:
-#             _, self.current_frame = self.video_capture.read()
-#             self.consumer.update(self.current_frame)
 
 
 def test_vcgl():
@@ -64,23 +45,25 @@ def test_vcgl():
     renderer = TextureRenderer()
     renderer.prepare()
 
-    cap = cv2.VideoCapture(0)
+    webcam = WebCam()
+    webcam.start()
 
     fps_checker = FPSChecker()
     while not glfw.WindowShouldClose(win):
-        _, frame = cap.read()
+        frame = webcam.frame
         fps_checker.lab(frame)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        renderer.update(frame)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-        renderer.update(frame)
         renderer.render()
+
         glfw.SwapBuffers(win)
 
         # Poll for and process events
         glfw.PollEvents()
 
-    cap.release()
+    webcam.stop()
     glfw.Terminate()
 
 
