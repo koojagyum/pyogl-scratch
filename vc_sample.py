@@ -69,11 +69,12 @@ def test_vcgl():
 
 
 def test_vc():
-    cap = cv2.VideoCapture(0)
+    webcam = WebCam()
+    webcam.start()
 
     fps_checker = FPSChecker()
     while True:
-        _, frame = cap.read()
+        frame = webcam.frame
         fps_checker.lab(frame)
 
         cv2.imshow(DEFAULT_TITLE, frame)
@@ -82,7 +83,7 @@ def test_vc():
             break
 
     # When everything done, release the capture
-    cap.release()
+    webcam.stop()
     cv2.destroyAllWindows()
 
 
