@@ -54,9 +54,6 @@ class TriangleRenderer(Renderer):
         )
         self._vertex_object = VertexObject(v, [3, 3])
 
-    def reshape(self, w, h):
-        super().reshape(w, h)
-
     def render(self):
         with self._program:
             with self._vertex_object as vo:
@@ -95,9 +92,6 @@ class RectangleRenderer(Renderer):
             dtype='uint8'
         )
         self._vertex_object = VertexObject(v, [3, 3], e)
-
-    def reshape(self, w, h):
-        super().reshape(w, h)
 
     def render(self):
         with self._program:
@@ -173,9 +167,6 @@ class TextureRenderer(Renderer):
                         GL_UNSIGNED_BYTE,
                         None
                     )
-
-    def reshape(self, w, h):
-        super().reshape(w, h)
 
     def dispose(self):
         super().dispose()
