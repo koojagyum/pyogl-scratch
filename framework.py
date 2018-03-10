@@ -37,31 +37,6 @@ class Program:
         glUniform1f(glGetUniformLocation(self._program, name), value)
 
 
-class Renderer:
-
-    def __init__(self, vs_path, fs_path, name=''):
-        self.name = name
-        self._vs_path = vs_path
-        self._fs_path = fs_path
-
-    def prepare(self):
-        with open(self._vs_path) as f:
-            vs_code = f.read()
-        with open(self._fs_path) as f:
-            fs_code = f.read()
-
-        self._program = Program(vs_code=vs_code, fs_code=fs_code)
-
-    def reshape(self, w, h):
-        glViewport(0, 0, w, h)
-
-    def render(self):
-        pass
-
-    def dispose(self):
-        self._program = None
-
-
 class VertexObject:
 
     # vertices: float numpy array (1d)
