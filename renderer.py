@@ -1,7 +1,9 @@
+import cv2
 import numpy as np
 
-from OpenGL.GL import *
+from cvutils import Webcam, FPSChecker
 from framework import *
+from OpenGL.GL import *
 
 
 class Renderer:
@@ -179,3 +181,22 @@ class TextureRenderer(Renderer):
         super().dispose()
         self._vertex_object = None
         self._texture = None
+
+
+class WebcamRenderer(TextureRenderer):
+
+    def __init__(self, name='', image=None, webcam=None):
+        super().__init__(name=name, image=image)
+
+        self.webcam = webcam
+        self.fps_checker = FPSChecker()
+
+    def render(self):
+        if self.webcam is not None:
+            image = self.webcam.frame
+            self.fps_checker.lab(image)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image = image[::-1, ...]
+            self.image = image
+
+        super().render()
