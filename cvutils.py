@@ -44,6 +44,7 @@ class Webcam:
         self.stop()
 
     def __del__(self):
+        self.stop()
         self._cap.release()
 
 
