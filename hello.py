@@ -3,8 +3,31 @@ import os
 
 from OpenGL.GL import *
 from PIL import Image
+from threading import Timer
 
+from glview import GLView
 from renderer import *
+
+
+def glview_test():
+    glview = GLView(512, 512, title='GLView Test')
+
+    def _change_renderer(glview, renderer):
+        glview.renderer = renderer
+
+    t1 = Timer(3.0, _change_renderer, (glview, TriangleRenderer()))
+    t2 = Timer(6.0, _change_renderer, (glview, RectangleRenderer()))
+    t1.start()
+    t2.start()
+
+    with Image.open('./image/psh.jpg') as img:
+        data = np.asarray(img, dtype='uint8')
+        data = data[::-1, ...]
+        t3 = Timer(9.0, _change_renderer,
+                   (glview, TextureRenderer(image=data)))
+        t3.start()
+
+    glview.run_loop()
 
 
 def main():
@@ -54,5 +77,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    # image_test()
+    # main()
+    glview_test()
