@@ -7,53 +7,55 @@ from threading import Thread
 # from threading import Condition
 
 
-class WebCam:
+class Webcam:
 
     def __init__(self):
-        self.__cap = cv2.VideoCapture(0)
-        _, self.__frame = self.__cap.read()
+        self._cap = cv2.VideoCapture(0)
+        __, self._frame = self._cap.read()
 
     # Create thread for capturing image
     def start(self):
-        self.__run = True
+        self._run = True
         Thread(target=self._update_frame, args=()).start()
 
     def stop(self):
-        self.__run = False
+        self._run = False
 
     def _update_frame(self):
-        while self.__run:
-            _, self.__frame = self.__cap.read()
+        while self._run:
+            __, self._frame = self._cap.read()
 
     @property
     def frame(self):
         # Copy may cause some problems about performance
-        # return self.__frame
-        return np.copy(self.__frame)
+        # return self._frame
+        return np.copy(self._frame)
 
     def __del__(self):
-        self.__cap.release()
+        self._cap.release()
 
 
 class FPSChecker:
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    pos = (0, 30)
-    interval = 1.0
 
     def __init__(self):
         self.fps = 0
+
+        self._timeToCheck = time.time()
+        self._frameCount = 0
+
         self.color = (0, 0, 255)
-        self.__timeToCheck = time.time()
-        self.__frameCount = 0
+        self.font = cv2.FONT_HERSHEY_SIMPLEX
+        self.pos = (0, 30)
+        self.interval = 1.0
 
     def draw(self, frame):
-        fpsStr = '{:5.2f} fps'.format(self.fps)
+        format_ = '{:5.2f} fps'.format(self.fps)
         if len(frame.shape) < 3:
             frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
 
         cv2.putText(
             frame,
-            fpsStr,
+            format_,
             self.pos,
             self.font,
             1,
@@ -66,12 +68,13 @@ class FPSChecker:
 
     def lab(self, frame):
         now = time.time()
-        dt = now - self.__timeToCheck
-        self.__frameCount += 1
+        dt = now - self._timeToCheck
+        self._frameCount += 1
         if dt > self.interval:
-            self.fps = float(self.__frameCount) / dt
-            self.__frameCount = 0
-            self.__timeToCheck = now
+            self.fps = float(self._frameCount) / dt
+
+            self._frameCount = 0
+            self._timeToCheck = now
 
         if frame is not None:
             self.draw(frame)

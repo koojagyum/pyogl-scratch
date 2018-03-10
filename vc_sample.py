@@ -8,9 +8,9 @@ from renderer import *
 from cvutils import *
 
 
-DEFAULT_WIDTH=1280
-DEFAULT_HEIGHT=720
-DEFAULT_TITLE='vc sample'
+DEFAULT_WIDTH = 1280
+DEFAULT_HEIGHT = 720
+DEFAULT_TITLE = 'vc sample'
 
 
 def test_vcgl():
@@ -45,7 +45,7 @@ def test_vcgl():
     renderer = TextureRenderer()
     renderer.prepare()
 
-    webcam = WebCam()
+    webcam = Webcam()
     webcam.start()
 
     fps_checker = FPSChecker()
@@ -69,7 +69,7 @@ def test_vcgl():
 
 
 def test_vc():
-    webcam = WebCam()
+    webcam = Webcam()
     webcam.start()
 
     fps_checker = FPSChecker()

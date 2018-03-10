@@ -6,13 +6,13 @@ from framework import *
 
 class TriangleRenderer(Renderer):
 
-    defaultVsPath = './shader/basic_color.vs'
-    defaultFsPath = './shader/basic_color.fs'
+    default_vs_path = './shader/basic_color.vs'
+    default_fs_path = './shader/basic_color.fs'
 
     def __init__(self, name=''):
         super().__init__(
-            vsPath=self.defaultVsPath,
-            fsPath=self.defaultFsPath,
+            vs_path=self.__class__.default_vs_path,
+            fs_path=self.__class__.default_fs_path,
             name=name
         )
 
@@ -25,30 +25,30 @@ class TriangleRenderer(Renderer):
              +0.0, +0.5, +0.0, 0.0, 0.0, 1.0],
             dtype='float32'
         )
-        self.vertexObject = VertexObject(v, [3, 3])
+        self._vertex_object = VertexObject(v, [3, 3])
 
     def reshape(self, w, h):
         super().reshape(w, h)
 
     def render(self):
-        with self.program as program:
-            with self.vertexObject as vertexObject:
-                glDrawArrays(GL_TRIANGLES, 0, vertexObject.count)
+        with self._program:
+            with self._vertex_object as vo:
+                glDrawArrays(GL_TRIANGLES, 0, vo.count)
 
     def dispose(self):
         super().dispose()
-        self.vertexObject = None
+        self._vertex_object = None
 
 
 class RectangleRenderer(Renderer):
 
-    defaultVsPath = './shader/basic_color.vs'
-    defaultFsPath = './shader/basic_color.fs'
+    default_vs_path = './shader/basic_color.vs'
+    default_fs_path = './shader/basic_color.fs'
 
     def __init__(self, name=''):
         super().__init__(
-            vsPath=self.defaultVsPath,
-            fsPath=self.defaultFsPath,
+            vs_path=self.default_vs_path,
+            fs_path=self.default_fs_path,
             name=name
         )
 
@@ -67,38 +67,38 @@ class RectangleRenderer(Renderer):
              1, 3, 2],
             dtype='uint8'
         )
-        self.vertexObject = VertexObject(v, [3, 3], e)
+        self._vertex_object = VertexObject(v, [3, 3], e)
 
     def reshape(self, w, h):
         super().reshape(w, h)
 
     def render(self):
-        with self.program as program:
-            with self.vertexObject as vertexObject:
+        with self._program:
+            with self._vertex_object as vo:
                 glDrawElements(
                     GL_TRIANGLES,
-                    vertexObject.count,
+                    vo.count,
                     GL_UNSIGNED_BYTE,
                     None
                 )
 
     def dispose(self):
         super().dispose()
-        self.vertexObject = None
+        self._vertex_object = None
 
 
 class TextureRenderer(Renderer):
 
-    defaultVsPath = './shader/basic_tex.vs'
-    defaultFsPath = './shader/basic_tex.fs'
+    default_vs_path = './shader/basic_tex.vs'
+    default_fs_path = './shader/basic_tex.fs'
 
     def __init__(self, name='', image=None):
         super().__init__(
-            vsPath=self.defaultVsPath,
-            fsPath=self.defaultFsPath,
+            vs_path=self.default_vs_path,
+            fs_path=self.default_fs_path,
             name=name
         )
-        self.image = image
+        self._image = image
 
     def prepare(self):
         super().prepare()
@@ -114,20 +114,24 @@ class TextureRenderer(Renderer):
              1, 3, 2],
             dtype='uint8'
         )
-        self.vertexObject = VertexObject(v, [3, 2], e)
-        self.texture = Texture(image=self.image)
+        self._vertex_object = VertexObject(v, [3, 2], e)
+        self._texture = Texture()
+
+        if self._image is not None:
+            self.update(self._image)
 
     def update(self, image):
-        self.texture.update(image=image)
+        self._image = image
+        self._texture.update(image=self._image)
 
     def render(self):
-        with self.program as program:
-            with self.vertexObject as vertexObject:
-                with self.texture as texture:
-                    program.setInt('inputTexture', texture.unitNumber)
+        with self._program as program:
+            with self._vertex_object as vo:
+                with self._texture as tex:
+                    program.setInt('inputTexture', tex.unit_number)
                     glDrawElements(
                         GL_TRIANGLES,
-                        vertexObject.count,
+                        vo.count,
                         GL_UNSIGNED_BYTE,
                         None
                     )
@@ -137,6 +141,5 @@ class TextureRenderer(Renderer):
 
     def dispose(self):
         super().dispose()
-        self.vertexObject = None
-        self.texture = None
-    
+        self._vertex_object = None
+        self._texture = None

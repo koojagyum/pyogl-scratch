@@ -11,10 +11,10 @@ def check_glerror(message='check_glerror'):
     print('{}: {}'.format(message, gluErrorString(err)))
 
 
-def create_program(shader_list):
+def create_program(shaders):
     program = glCreateProgram()
 
-    for shader in shader_list:
+    for shader in shaders:
         glAttachShader(program, shader)
 
     glLinkProgram(program)
@@ -28,15 +28,15 @@ def create_program(shader_list):
         print('Link failure:\n{}'.format(log))
         return -1
 
-    for shader in shader_list:
+    for shader in shaders:
         glDetachShader(program, shader)
 
     return program
 
 
-def create_shader(shader_type, shader_source):
+def create_shader(shader_type, shader_code):
     shader = glCreateShader(shader_type)
-    glShaderSource(shader, shader_source)
+    glShaderSource(shader, shader_code)
     glCompileShader(shader)
 
     status = glGetShaderiv(shader, GL_COMPILE_STATUS)

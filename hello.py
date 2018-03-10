@@ -31,7 +31,7 @@ def main():
     # make context current
     glfw.MakeContextCurrent(win)
 
-    glClearColor(0.5, 0.5, 0.5,1.0)
+    glClearColor(0.5, 0.5, 0.5, 1.0)
 
     # renderer = TriangleRenderer()
     # renderer = RectangleRenderer()
@@ -56,4 +56,3 @@ def main():
 if __name__ == '__main__':
     main()
     # image_test()
-    
