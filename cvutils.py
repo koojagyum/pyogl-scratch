@@ -38,11 +38,13 @@ class WebCam:
 class FPSChecker:
     font = cv2.FONT_HERSHEY_SIMPLEX
     pos = (0, 30)
+    interval = 1.0
 
     def __init__(self):
-        self.__timeToCheck = self.__recent = time.time()
         self.fps = 0
         self.color = (0, 0, 255)
+        self.__timeToCheck = time.time()
+        self.__frameCount = 0
 
     def draw(self, frame):
         fpsStr = '{:5.2f} fps'.format(self.fps)
@@ -63,13 +65,13 @@ class FPSChecker:
         return frame
 
     def lab(self, frame):
-        start = self.__recent
-        self.__recent = time.time()
-        d = self.__recent - start
-
-        if (self.__recent - self.__timeToCheck) > 1:
-            self.__timeToCheck = self.__recent
-            self.fps = 1.0 / d
+        now = time.time()
+        dt = now - self.__timeToCheck
+        self.__frameCount += 1
+        if dt > self.interval:
+            self.fps = float(self.__frameCount) / dt
+            self.__frameCount = 0
+            self.__timeToCheck = now
 
         if frame is not None:
             self.draw(frame)
