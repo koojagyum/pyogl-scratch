@@ -16,10 +16,15 @@ class Webcam:
     # Create thread for capturing image
     def start(self):
         self._run = True
-        Thread(target=self._update_frame, args=()).start()
+        self._thread = Thread(
+            target=self._update_frame,
+            args=()
+        )
+        self._thread.start()
 
     def stop(self):
         self._run = False
+        self._thread.join()
 
     def _update_frame(self):
         while self._run:
@@ -30,6 +35,13 @@ class Webcam:
         # Copy may cause some problems about performance
         # return self._frame
         return np.copy(self._frame)
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        self.stop()
 
     def __del__(self):
         self._cap.release()
@@ -66,7 +78,7 @@ class FPSChecker:
 
         return frame
 
-    def lab(self, frame):
+    def lab(self, frame=None):
         now = time.time()
         dt = now - self._timeToCheck
         self._frameCount += 1
