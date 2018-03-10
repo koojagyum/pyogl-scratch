@@ -15,6 +15,7 @@ class GLView:
         self._height = height
         self._title = title
         self._renderer = None
+        self._next_renderer = None
 
         self._initialize()
 

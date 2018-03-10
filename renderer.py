@@ -98,7 +98,19 @@ class TextureRenderer(Renderer):
             fs_path=self.default_fs_path,
             name=name
         )
-        self._image = image
+
+        self._image = None
+        self._next_image = None
+
+        self.image = image
+
+    @property
+    def image(self):
+        return self._image
+
+    @image.setter
+    def image(self, value):
+        self._next_image = value
 
     def prepare(self):
         super().prepare()
@@ -117,14 +129,13 @@ class TextureRenderer(Renderer):
         self._vertex_object = VertexObject(v, [3, 2], e)
         self._texture = Texture()
 
-        if self._image is not None:
-            self.update(self._image)
-
-    def update(self, image):
-        self._image = image
-        self._texture.update(image=self._image)
-
     def render(self):
+        if self._next_image is not None:
+            self._image = self._next_image
+            self._texture.update(image=self._image)
+
+            self._next_image = None
+
         with self._program as program:
             with self._vertex_object as vo:
                 with self._texture as tex:
