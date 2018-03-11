@@ -183,7 +183,8 @@ class WebcamRenderer(TextureRenderer):
         self.fps_checker = FPSChecker()
 
     def render(self):
-        if self.webcam is not None:
+        available = (self.webcam is not None) and (self.webcam._run)
+        if available:
             image = self.webcam.frame
             self.fps_checker.lab(image)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

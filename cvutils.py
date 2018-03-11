@@ -28,7 +28,7 @@ class Webcam:
 
     def _update_frame(self):
         while self._run:
-            __, self._frame = self._cap.read()
+            self._run, self._frame = self._cap.read()
 
     @property
     def frame(self):
