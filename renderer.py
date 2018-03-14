@@ -174,18 +174,17 @@ class TextureRenderer(Renderer):
         self._texture = None
 
 
-class WebcamRenderer(TextureRenderer):
+class VideoRenderer(TextureRenderer):
 
-    def __init__(self, name='', image=None, webcam=None):
+    def __init__(self, name='', image=None, video_source=None):
         super().__init__(name=name, image=image)
 
-        self.webcam = webcam
+        self.video_source = video_source
         self.fps_checker = FPSChecker()
 
     def render(self):
-        available = (self.webcam is not None) and (self.webcam._run)
-        if available:
-            image = self.webcam.frame
+        image = self.video_source.frame
+        if image is not None:
             self.fps_checker.lab(image)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = image[::-1, ...]

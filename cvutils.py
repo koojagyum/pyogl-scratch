@@ -28,7 +28,9 @@ class Webcam:
 
     def _update_frame(self):
         while self._run:
-            succeed, self._frame = self._cap.read()
+            succeed, temp_frame = self._cap.read()
+            if succeed:
+                self._frame = temp_frame
             self._run = self._run and succeed
 
     @property
@@ -36,6 +38,10 @@ class Webcam:
         # Copy may cause some problems about performance
         # return self._frame
         return np.copy(self._frame)
+
+    @property
+    def run(self):
+        return _run
 
     def __enter__(self):
         self.start()

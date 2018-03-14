@@ -16,7 +16,7 @@ TITLE = 'Video capture'
 
 def test_vcgl_glview():
     webcam = Webcam()
-    renderer = WebcamRenderer(webcam=webcam)
+    renderer = VideoRenderer(video_source=webcam)
 
     glview = GLView(WIDTH, HEIGHT, TITLE)
     glview.renderer = renderer
