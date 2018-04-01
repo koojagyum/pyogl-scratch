@@ -22,7 +22,11 @@ def print_overline(msg):
 def build_format(current_byte, total_byte):
     current_kb = int(current_byte / 1024)
     total_kb = int(total_byte / 1024)
-    string = '{:d} / {:d} Kbyte  {:6.2f} %'.format(current_kb, total_kb, current_byte * 100. / total_byte)
+    string = '{:d} / {:d} Kbyte  {:6.2f} %'.format(
+        current_kb,
+        total_kb,
+        current_byte * 100. / total_byte
+    )
 
     return string
 

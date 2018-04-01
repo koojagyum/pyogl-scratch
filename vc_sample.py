@@ -85,12 +85,18 @@ def test_vcgl(frame_block=None):
 def draw_bbox(image, bb):
     color = (0, 255, 0)
 
-    l = bb.left()
-    t = bb.top()
-    r = bb.right()
-    b = bb.bottom()
+    left = bb.left()
+    top = bb.top()
+    right = bb.right()
+    bottom = bb.bottom()
 
-    cv2.rectangle(image, (l, t), (r, b), color=color, thickness=2)
+    cv2.rectangle(
+        image,
+        (left, top),
+        (right, bottom),
+        color=color,
+        thickness=2
+    )
 
 
 def test_vc_bb():

@@ -2,7 +2,8 @@ import cv2
 import dlib
 import getopt
 import numpy as np
-import os, sys
+import os
+import sys
 
 import downloader
 
@@ -30,11 +31,11 @@ class FaceDetector:
         rects = self.detector(gray, 1)
 
         for (i, rect) in enumerate(rects):
-            l = int(rect.left() / scale)
-            t = int(rect.top() / scale)
-            r = int(rect.right() / scale)
-            b = int(rect.bottom() / scale)
-            rects[i] = dlib.rectangle(l, t, r, b)
+            left = int(rect.left() / scale)
+            top = int(rect.top() / scale)
+            right = int(rect.right() / scale)
+            bottom = int(rect.bottom() / scale)
+            rects[i] = dlib.rectangle(left, top, right, bottom)
 
         self.rects = rects
         return self.rects
@@ -55,7 +56,7 @@ def plot_pts(image, pts):
     plt.figure(1)
 
     plt.imshow(image)
-    plt.plot(pts[:,0], pts[:,1], 'ro')
+    plt.plot(pts[:, 0], pts[:, 1], 'ro')
 
     plt.show()
 
