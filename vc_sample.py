@@ -82,9 +82,7 @@ def test_vcgl(frame_block=None):
     glfw.Terminate()
 
 
-def draw_bbox(image, bb):
-    color = (0, 255, 0)
-
+def draw_bbox(image, bb, color=(0, 255, 0)):
     left = bb.left()
     top = bb.top()
     right = bb.right()
@@ -99,13 +97,32 @@ def draw_bbox(image, bb):
     )
 
 
+def draw_bboxes(image, bboxes):
+    color = (0, 255, 0)
+
+    for bb in bboxes:
+        draw_bbox(image, bb, color)
+
+
+def draw_shape(image, shape, color=(255, 0, 0)):
+    radius = 3
+    for pt in shape:
+        cv2.circle(image, (pt[0], pt[1]), radius, color, -1)
+
+
+def draw_shapes(image, shapes):
+    for shape in shapes:
+        draw_shape(image, shape)
+
+
 def test_vc_bb():
     detector = FaceDetector()
 
     def _block(frame):
-        rects = detector.detect(frame)
+        rects, shapes = detector.detect(frame)
         if len(rects) > 0:
-            draw_bbox(frame, rects[0])
+            draw_bboxes(frame, rects)
+            draw_shapes(frame, shapes)
 
     test_vc(frame_block=_block)
     # test_vcgl(frame_block=_block)

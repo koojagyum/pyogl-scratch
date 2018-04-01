@@ -20,6 +20,14 @@ class FaceDetector:
         self.predictor = dlib.shape_predictor(predictor_path)
         self.width = int(resize_width)
 
+    def get_landmarks(self, image, bboxes):
+        landmarks = np.array(
+            [[[p.x, p.y]
+              for p in self.predictor(image, bb).parts()]
+             for bb in bboxes]
+        )
+        return landmarks
+
     def detect(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -29,6 +37,7 @@ class FaceDetector:
         gray = cv2.resize(gray, dsize=dsize)
 
         rects = self.detector(gray, 1)
+        landmarks = self.get_landmarks(gray, rects)
 
         for (i, rect) in enumerate(rects):
             left = int(rect.left() / scale)
@@ -37,8 +46,14 @@ class FaceDetector:
             bottom = int(rect.bottom() / scale)
             rects[i] = dlib.rectangle(left, top, right, bottom)
 
+        divisor = 1.0 / scale
+        for (i, shape) in enumerate(landmarks):
+            shape = (shape * divisor).astype(dtype=np.int32)
+            landmarks[i] = shape
+
         self.rects = rects
-        return self.rects
+        self.landmarks = landmarks
+        return self.rects, self.landmarks
 
 
 def help():
@@ -52,11 +67,19 @@ def help():
     sys.exit(1)
 
 
-def plot_pts(image, pts):
-    plt.figure(1)
+def plot_shapes(image, shapes):
+    fig, ax = plt.subplots()
 
-    plt.imshow(image)
-    plt.plot(pts[:, 0], pts[:, 1], 'ro')
+    ax.imshow(image)
+    for (i, shape) in enumerate(shapes):
+        color_spec = 'C{}'.format(i)
+        ax.plot(
+            shape[:, 0],
+            shape[:, 1],
+            color=color_spec,
+            marker='.',
+            linestyle='None'
+        )
 
     plt.show()
 
@@ -86,9 +109,19 @@ def plot_bboxes(image, bboxes):
 def test_bbox(image_path):
     detector = FaceDetector()
     image = cv2.imread(image_path)
-    rects = detector.detect(image)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    rects, _ = detector.detect(image)
 
     plot_bboxes(image, rects)
+
+
+def test_shape(image_path):
+    detector = FaceDetector()
+    image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    _, shapes = detector.detect(image)
+
+    plot_shapes(image, shapes)
 
 
 def main():
@@ -108,7 +141,9 @@ def main():
         help()
 
     print('input_path: {}'.format(input_path))
+
     test_bbox(input_path)
+    test_shape(input_path)
 
 
 if __name__ == '__main__':
