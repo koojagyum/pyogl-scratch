@@ -5,7 +5,7 @@ import numpy as np
 import os
 import time
 
-import downloader
+from face_landmark import FaceDetector
 
 from cvutils import *
 from glview import GLView
@@ -94,12 +94,10 @@ def draw_bbox(image, bb):
 
 
 def test_vc_bb():
-    detector = dlib.get_frontal_face_detector()
-    predictor_path = downloader.check_model()
-    predictor = dlib.shape_predictor(predictor_path)
+    detector = FaceDetector()
 
     def _block(frame):
-        rects = detector(frame, 1)
+        rects = detector.detect(frame)
         if len(rects) > 0:
             draw_bbox(frame, rects[0])
 
