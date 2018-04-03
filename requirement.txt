@@ -8,3 +8,4 @@
  * cyglfw3
  * PIL
  * dlib
+ * matplotlib
