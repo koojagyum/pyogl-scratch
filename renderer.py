@@ -176,15 +176,22 @@ class TextureRenderer(Renderer):
 
 class VideoRenderer(TextureRenderer):
 
-    def __init__(self, name='', image=None, video_source=None):
+    def __init__(self,
+                 name='',
+                 image=None,
+                 video_source=None,
+                 frame_block=None):
         super().__init__(name=name, image=image)
 
         self.video_source = video_source
         self.fps_checker = FPSChecker()
+        self.frame_block = frame_block
 
     def render(self):
         image = self.video_source.frame
         if image is not None:
+            if self.frame_block:
+                image = self.frame_block(image)
             self.fps_checker.lab(image)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image = image[::-1, ...]

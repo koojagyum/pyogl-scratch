@@ -17,10 +17,13 @@ HEIGHT = 720
 TITLE = 'Video capture'
 
 
-def test_vcgl_glview():
+def test_vcgl_glview(frame_block=None):
     with Webcam() as webcam:
         glview = GLView(WIDTH, HEIGHT, TITLE)
-        glview.renderer = VideoRenderer(video_source=webcam)
+        glview.renderer = VideoRenderer(
+            video_source=webcam,
+            frame_block=frame_block
+        )
         glview.run_loop()
 
 
@@ -62,10 +65,9 @@ def test_vcgl(frame_block=None):
     with webcam:
         while not glfw.WindowShouldClose(win):
             frame = webcam.frame
-            fps_checker.lab(frame)
-
             if frame_block:
-                frame_block(frame)
+                frame = frame_block(frame)
+            fps_checker.lab(frame)
 
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = frame[::-1, ...]
@@ -123,9 +125,11 @@ def test_vc_bb():
         if len(rects) > 0:
             draw_bboxes(frame, rects)
             draw_shapes(frame, shapes)
+        return frame
 
-    test_vc(frame_block=_block)
+    # test_vc(frame_block=_block)
     # test_vcgl(frame_block=_block)
+    test_vcgl_glview(frame_block=_block)
 
 
 def test_vc(frame_block=None):
@@ -138,7 +142,7 @@ def test_vc(frame_block=None):
             fps_checker.lab(frame)
 
             if frame_block:
-                frame_block(frame)
+                frame = frame_block(frame)
             cv2.imshow(TITLE, frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
