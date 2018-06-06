@@ -21,6 +21,10 @@ class GLView:
 
         self.renderer = renderer
 
+        self._key_callback = None
+        self._mbtn_callback = None
+        self._mpos_callback = None
+
     def _initialize(self):
         # save current working directory
         cwd = os.getcwd()
@@ -54,6 +58,36 @@ class GLView:
     @renderer.setter
     def renderer(self, value):
         self._next_renderer = value
+
+    @property
+    def key_callback(self):
+        return self._key_callback
+
+    @key_callback.setter
+    def key_callback(self, value):
+        self._key_callback = value
+        if self._key_callback and self._win:
+            glfw.SetKeyCallback(self._win, self._key_callback)
+
+    @property
+    def mbtn_callback(self):
+        return self._mbtn_callback
+
+    @mbtn_callback.setter
+    def mbtn_callback(self, value):
+        self._mbtn_callback = value
+        if self._mbtn_callback and self._win:
+            glfw.SetMouseButtonCallback(self._win, self._mbtn_callback)
+
+    @property
+    def mpos_callback(self):
+        return self._mpos_callback
+
+    @mpos_callback.setter
+    def mpos_callback(self, value):
+        self._mpos_callback = value
+        if self._mpos_callback and self._win:
+            glfw.SetCursorPosCallback(self._win, self._mpos_callback)
 
     def run_loop(self):
         glfw.MakeContextCurrent(self._win)
