@@ -43,6 +43,14 @@ class Webcam:
     def run(self):
         return _run
 
+    @property
+    def width(self):
+        return self._cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+
+    @property
+    def height(self):
+        return self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
     def __enter__(self):
         self.start()
         return self

@@ -1,15 +1,28 @@
 import cv2
 import dlib
 import getopt
+import math
 import numpy as np
 import os
+import random
 import sys
 
 import downloader
 
-from os.path import split
+from glview import GLView
 from matplotlib import pyplot as plt
 from matplotlib import patches
+from os.path import split
+from renderer import *
+from threading import Timer
+
+
+verbose = False
+
+
+def debug(msg):
+    if verbose:
+        print(msg)
 
 
 class FaceDetector:
@@ -57,12 +70,13 @@ class FaceDetector:
 
 
 def help():
-    def filename_from_path(path):
+    def filename_of(path):
         return split(path)[-1]
 
-    print('Usage: ' + filename_from_path(sys.argv[0]) + ' [options]')
+    print('Usage: ' + filename_of(sys.argv[0]) + ' [options]')
     print('   options:')
     print('   -i, --input    Path for input file')
+    print('   -v, --verbose    Print debug string')
     print('   -h, --help    Show this help')
     sys.exit(1)
 
@@ -80,6 +94,7 @@ def plot_shapes(image, shapes):
             marker='.',
             linestyle='None'
         )
+        debug(shape)
 
     plt.show()
 
@@ -125,8 +140,14 @@ def test_shape(image_path):
 
 
 def main():
+    global verbose
+
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hi:', ['input=', 'help'])
+        opts, args = getopt.getopt(
+            sys.argv[1:],
+            'i:vh',
+            ['input=', 'verbose', 'help']
+        )
     except getopt.GetoptError as err:
         print(str(err))
         help()
@@ -134,13 +155,17 @@ def main():
     for opt, arg in opts:
         if opt in ('-i', '--input'):
             input_path = arg
+        elif opt in ('-v', '--verbose'):
+            verbose = True
+        elif opt in ('-h', '--help'):
+            help()
         else:
             assert False, 'unhandled option'
 
     if 'input_path' not in locals():
         help()
 
-    print('input_path: {}'.format(input_path))
+    debug(' - input_path: {}'.format(input_path))
 
     test_bbox(input_path)
     test_shape(input_path)

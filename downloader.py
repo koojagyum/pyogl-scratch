@@ -1,10 +1,12 @@
-import urllib.request
+import bz2
+import os
 import sys
 import tarfile
-import bz2
+import urllib.request
 
-from os.path import isfile
+
 from os.path import abspath
+from os.path import isfile
 from os.path import join
 
 
@@ -43,6 +45,8 @@ def extract_bz2(bz2path, todir='.'):
 
 def download(url, dirpath='.'):
     dirpath = abspath(dirpath)
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
     filepath = join(dirpath, url.split('/')[-1])
     print('Downloading {}'.format(filepath))
     u = urllib.request.urlopen(url)

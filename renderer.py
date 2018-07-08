@@ -8,10 +8,12 @@ from OpenGL.GL import *
 
 class Renderer:
 
-    def __init__(self, vs_path, fs_path, name=''):
+    def __init__(self, vs_path, fs_path, gs_path=None, name=''):
         self.name = name
         self._vs_path = vs_path
         self._fs_path = fs_path
+        self._gs_path = gs_path
+        self._program = None
 
     def prepare(self):
         with open(self._vs_path) as f:
@@ -19,7 +21,16 @@ class Renderer:
         with open(self._fs_path) as f:
             fs_code = f.read()
 
-        self._program = Program(vs_code=vs_code, fs_code=fs_code)
+        gs_code = None
+        if self._gs_path:
+            with open(self._gs_path) as f:
+                gs_code = f.read()
+
+        self._program = Program(
+            vs_code=vs_code,
+            fs_code=fs_code,
+            gs_code=gs_code
+        )
 
     def reshape(self, w, h):
         glViewport(0, 0, w, h)
@@ -29,6 +40,29 @@ class Renderer:
 
     def dispose(self):
         self._program = None
+
+
+class RendererGroup(Renderer):
+
+    def __init__(self, name=''):
+        self.name = name
+        self.renderers = []
+
+    def prepare(self):
+        for r in self.renderers:
+            r.prepare()
+
+    def reshape(self, w, h):
+        for r in self.renderers:
+            r.reshape(w, h)
+
+    def render(self):
+        for r in self.renderers:
+            r.render()
+
+    def dispose(self):
+        for r in self.renderers:
+            r.dispose()
 
 
 class TriangleRenderer(Renderer):
@@ -42,6 +76,7 @@ class TriangleRenderer(Renderer):
             fs_path=self.__class__.default_fs_path,
             name=name
         )
+        self._vertex_object = None
 
     def prepare(self):
         super().prepare()
@@ -75,6 +110,7 @@ class RectangleRenderer(Renderer):
             fs_path=self.default_fs_path,
             name=name
         )
+        self._vertex_object = None
 
     def prepare(self):
         super().prepare()
@@ -122,6 +158,8 @@ class TextureRenderer(Renderer):
 
         self._image = None
         self._next_image = None
+        self._vertex_object = None
+        self._texture = None
 
         self.image = image
 
@@ -172,6 +210,8 @@ class TextureRenderer(Renderer):
         super().dispose()
         self._vertex_object = None
         self._texture = None
+        self._next_image = self._image
+        self._image = None
 
 
 class VideoRenderer(TextureRenderer):
